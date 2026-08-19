@@ -10,6 +10,7 @@ import com.example.product.mapper.ProductMapper;
 import com.example.product.repository.ProductRepository;
 import com.example.product.service.CloudinaryService;
 import com.example.product.service.ProductService;
+import com.example.product.ultis.file.FileValidator;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -28,15 +29,17 @@ public class ProductServiceImpl implements ProductService {
     private final ProductMapper productMapper;
     private static final String PRODUCT_IMAGE_FOLDER = "products";
     private final CloudinaryService cloudinaryService;
+    private final FileValidator fileValidator;
 
     public ProductServiceImpl(ProductRepository productRepository,
                               ProductMapper productMapper,
-                              CloudinaryService cloudinaryService) {
+                              CloudinaryService cloudinaryService,
+                              FileValidator fileValidator) {
         this.productRepository = productRepository;
         this.productMapper = productMapper;
         this.cloudinaryService = cloudinaryService;
+        this.fileValidator = fileValidator;
     }
-
     @Override
     public Page<ProductResponse> getAll(Pageable pageable) {
         return productRepository.findAll(pageable)
@@ -75,7 +78,6 @@ public class ProductServiceImpl implements ProductService {
     public ProductResponse update(Long id, CreateProductRequest request) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("error.product.notfound", id));
-
         product.setName(request.getName());
         product.setImage(request.getImage());
         product.setDescription(request.getDescription());
@@ -102,7 +104,7 @@ public class ProductServiceImpl implements ProductService {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("error.product.notfound", id));
 
-        validateImageFile(file);
+        fileValidator.validateImageFile(file);
 
         String oldImageUrl = product.getImage();
 
@@ -121,8 +123,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public String uploadImageOnly(MultipartFile file) {
-        validateImageFile(file);
-
+        fileValidator.validateImageFile(file);
         Map<?, ?> uploadResult = cloudinaryService.uploadFile(file, PRODUCT_IMAGE_FOLDER);
         Object secureUrl = uploadResult.get("secure_url");
 
@@ -132,13 +133,4 @@ public class ProductServiceImpl implements ProductService {
         return secureUrl.toString();
     }
 
-    private void validateImageFile(MultipartFile file) {
-        if (file == null || file.isEmpty()) {
-            throw new FileStorageException("error.file.empty");
-        }
-        String contentType = file.getContentType();
-        if (contentType == null || !contentType.startsWith("image/")) {
-            throw new FileStorageException("error.file.invalid.type");
-        }
-    }
 }
