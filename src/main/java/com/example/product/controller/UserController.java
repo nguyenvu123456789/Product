@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
     private final UserService userService;
-    private final PageableUtils pageableUtils
+    private final PageableUtils pageableUtils;
 
     public UserController(UserService userService, PageableUtils pageableUtils) {
         this.userService = userService;
@@ -33,14 +33,8 @@ public class UserController {
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "asc") String direction) {
 
-        Sort sort = direction.equalsIgnoreCase("desc")
-                ? Sort.by(sortBy).descending()
-                : Sort.by(sortBy).ascending();
-
         Pageable pageable = pageableUtils.build(page, size, sortBy, direction);
-
         Page<UserResponse> userPage = userService.getEnabledUsers(pageable);
-
         PageResponse<UserResponse> data = PageResponse.from(userPage);
 
         return ResponseEntity.ok(

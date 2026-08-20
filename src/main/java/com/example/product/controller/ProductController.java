@@ -5,6 +5,7 @@ import com.example.product.dto.product.response.ProductResponse;
 import com.example.product.dto.common.response.PageResponse;
 import com.example.product.dto.common.response.ApiResponse;
 import com.example.product.service.ProductService;
+import com.example.product.ultis.paging.PageableUtils;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,9 +24,12 @@ import java.util.Map;
 public class ProductController {
 
     private final ProductService productService;
+    private final PageableUtils pageableUtils;
 
-    public ProductController(ProductService productService) {
+    public ProductController(ProductService productService, PageableUtils pageableUtils) {
+
         this.productService = productService;
+        this.pageableUtils = pageableUtils;
     }
 
     @GetMapping
@@ -34,15 +38,9 @@ public class ProductController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "asc") String direction) {
-
-        Sort sort = direction.equalsIgnoreCase("desc")
-                ? Sort.by(sortBy).descending()
-                : Sort.by(sortBy).ascending();
-
-        Pageable pageable = PageRequest.of(page, size, sort);
+        Pageable pageable = pageableUtils.build(page, size, sortBy, direction);
 
         Page<ProductResponse> productPage = productService.getAll(pageable);
-
         PageResponse<ProductResponse> data = PageResponse.from(productPage);
 
         return ResponseEntity.ok(
