@@ -5,6 +5,7 @@ import com.example.product.dto.category.response.CategoryResponse;
 import com.example.product.dto.common.response.PageResponse;
 import com.example.product.dto.common.response.ApiResponse;
 import com.example.product.service.CategoryService;
+import com.example.product.ultis.paging.PageableUtils;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,9 +20,12 @@ import org.springframework.web.bind.annotation.*;
 public class CategoryController {
 
     private final CategoryService categoryService;
+    private final PageableUtils pageableUtils;
 
-    public CategoryController(CategoryService categoryService) {
+    public CategoryController(CategoryService categoryService, PageableUtils pageableUtils) {
+
         this.categoryService = categoryService;
+        this.pageableUtils = pageableUtils;
     }
 
     @GetMapping
@@ -31,12 +35,7 @@ public class CategoryController {
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "asc") String direction) {
 
-        Sort sort = direction.equalsIgnoreCase("desc")
-                ? Sort.by(sortBy).descending()
-                : Sort.by(sortBy).ascending();
-
-        Pageable pageable = PageRequest.of(page, size, sort);
-
+        Pageable pageable = pageableUtils.build(page, size, sortBy, direction);
         Page<CategoryResponse> categoryPage = categoryService.getAll(pageable);
 
         PageResponse<CategoryResponse> data = PageResponse.from(categoryPage);
