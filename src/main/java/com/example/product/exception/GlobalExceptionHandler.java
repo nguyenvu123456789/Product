@@ -1,6 +1,7 @@
 package com.example.product.exception;
 
 import com.example.product.dto.common.response.ApiResponse;
+import com.example.product.ultis.file.FileValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
@@ -18,7 +19,6 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 import java.util.HashMap;
 import java.util.Map;
-
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -51,26 +51,19 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ApiResponse<Void>> handleIllegalArgument(IllegalArgumentException ex) {
         log.warn("Illegal argument: {}", ex.getMessage());
-
-        String message = resolveMessage(
-                ex.getMessage(),
-                null,
-                ex.getMessage()
-        );
-
+        String message = resolveMessage(ex.getMessage(), null, ex.getMessage());
         return build(HttpStatus.BAD_REQUEST, message);
     }
 
-    // ---- 400 : path variable / query param sai kiểu dữ liệu (VD: id=abc thay vì số) ----
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ApiResponse<Void>> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
         String requiredType = ex.getRequiredType() != null ? ex.getRequiredType().getSimpleName() : "?";
-        String message = resolveMessage("error.type.mismatch", new Object[]{ex.getName(), requiredType},
-                "Invalid value for parameter '" + ex.getName() + "'");
+        String message = resolveMessage("error.type.mismatch",
+                new Object[]{ex.getName(), requiredType},
+                "Parameter type mismatch");
         return build(HttpStatus.BAD_REQUEST, message);
     }
 
-    // ---- 400 : body JSON không đọc được (sai định dạng, thiếu dấu ngoặc, ...) ----
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ApiResponse<Void>> handleNotReadable(HttpMessageNotReadableException ex) {
         log.warn("Malformed request body: {}", ex.getMessage());
@@ -78,7 +71,6 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.BAD_REQUEST, message);
     }
 
-    // ---- 409 : vi phạm ràng buộc DB (unique, foreign key, ...) ----
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ApiResponse<Void>> handleDataIntegrity(DataIntegrityViolationException ex) {
         log.error("Data integrity violation", ex);
@@ -86,17 +78,16 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.CONFLICT, message);
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponse<Void>> handleGeneral(Exception ex) {
-
-        log.error("Unhandled exception", ex);
-        String message = resolveMessage("error.internal", null, "An unexpected error occurred");
-        return build(HttpStatus.INTERNAL_SERVER_ERROR, message);
-    }
-
     @ExceptionHandler(FileStorageException.class)
     public ResponseEntity<ApiResponse<Void>> handleFileStorage(FileStorageException ex) {
         log.error("File storage error: {}", ex.getMessage());
+        String message = resolveMessage(ex.getMessageKey(), ex.getArgs(), ex.getMessage());
+        return build(HttpStatus.BAD_REQUEST, message);
+    }
+
+    @ExceptionHandler(FileValidationException.class)
+    public ResponseEntity<ApiResponse<Void>> handleFileValidation(FileValidationException ex) {
+        log.warn("File validation error: {}", ex.getMessage());
         String message = resolveMessage(ex.getMessageKey(), ex.getArgs(), ex.getMessage());
         return build(HttpStatus.BAD_REQUEST, message);
     }
@@ -108,11 +99,17 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.PAYLOAD_TOO_LARGE, message);
     }
 
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiResponse<Void>> handleGeneral(Exception ex) {
+        log.error("Unhandled exception", ex);
+        String message = resolveMessage("error.internal", null, "An unexpected error occurred");
+        return build(HttpStatus.INTERNAL_SERVER_ERROR, message);
+    }
+
     private ResponseEntity<ApiResponse<Void>> build(HttpStatus status, String message) {
         ApiResponse<Void> body = ApiResponse.error(status.value(), message);
         return new ResponseEntity<>(body, status);
     }
-
 
     private String resolveMessage(String key, Object[] args, String defaultMessage) {
         if (key == null) {

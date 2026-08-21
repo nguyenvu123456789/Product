@@ -4,13 +4,12 @@ import com.example.product.dto.product.request.CreateProductRequest;
 import com.example.product.dto.product.response.ProductResponse;
 import com.example.product.dto.common.request.ProductSearchRequest;
 import com.example.product.entity.Product;
-import com.example.product.exception.FileStorageException;
 import com.example.product.exception.ResourceNotFoundException;
 import com.example.product.mapper.ProductMapper;
 import com.example.product.repository.ProductRepository;
 import com.example.product.service.CloudinaryService;
+import com.example.product.service.ImageUploadService;
 import com.example.product.service.ProductService;
-import com.example.product.ultis.file.FileValidator;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -19,7 +18,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
-import java.util.Map;
 
 @Service
 @Transactional
@@ -29,23 +27,23 @@ public class ProductServiceImpl implements ProductService {
     private final ProductMapper productMapper;
     private static final String PRODUCT_IMAGE_FOLDER = "products";
     private final CloudinaryService cloudinaryService;
-    private final FileValidator fileValidator;
+    private final ImageUploadService imageUploadService;
 
     public ProductServiceImpl(ProductRepository productRepository,
                               ProductMapper productMapper,
                               CloudinaryService cloudinaryService,
-                              FileValidator fileValidator) {
+                              ImageUploadService imageUploadService) {
         this.productRepository = productRepository;
         this.productMapper = productMapper;
         this.cloudinaryService = cloudinaryService;
-        this.fileValidator = fileValidator;
+        this.imageUploadService = imageUploadService;
     }
     @Override
     public Page<ProductResponse> getAll(Pageable pageable) {
         return productRepository.findAll(pageable)
                 .map(productMapper::toResponse);
     }
-    
+
     @Override
     public Page<ProductResponse> search(ProductSearchRequest request, Pageable pageable) {
         return productRepository.search(
@@ -104,11 +102,9 @@ public class ProductServiceImpl implements ProductService {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("error.product.notfound", id));
 
-        fileValidator.validateImageFile(file);
-
         String oldImageUrl = product.getImage();
 
-        String newImageUrl = uploadImageOnly(file);
+        String newImageUrl = imageUploadService.upload(file, PRODUCT_IMAGE_FOLDER);
         product.setImage(newImageUrl);
         product.setModifiedDate(new Date());
         Product updated = productRepository.save(product);
@@ -119,18 +115,6 @@ public class ProductServiceImpl implements ProductService {
         }
 
         return productMapper.toResponse(updated);
-    }
-
-    @Override
-    public String uploadImageOnly(MultipartFile file) {
-        fileValidator.validateImageFile(file);
-        Map<?, ?> uploadResult = cloudinaryService.uploadFile(file, PRODUCT_IMAGE_FOLDER);
-        Object secureUrl = uploadResult.get("secure_url");
-
-        if (secureUrl == null) {
-            throw new FileStorageException("error.upload.failed");
-        }
-        return secureUrl.toString();
     }
 
 }

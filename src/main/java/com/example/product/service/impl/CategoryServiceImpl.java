@@ -72,6 +72,7 @@ public class CategoryServiceImpl implements CategoryService {
         category.setCategoryCode(request.getCategoryCode());
         category.setStatus(request.getStatus());
         category.setModifiedDate(new Date());
+        category.setModifiedBy(SecurityContextHolder.getContext().getAuthentication().getName());
 
         Category updated = categoryRepository.save(category);
         return categoryMapper.toResponse(updated);

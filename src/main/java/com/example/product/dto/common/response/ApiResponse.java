@@ -3,7 +3,6 @@ package com.example.product.dto.common.response;
 import java.time.LocalDateTime;
 import java.util.Map;
 
-
 public class ApiResponse<T> {
 
     private boolean success;
@@ -22,16 +21,16 @@ public class ApiResponse<T> {
         this.timestamp = LocalDateTime.now();
     }
 
-    public static <T> ApiResponse<T> success(T data) {
-        return new ApiResponse<>(true, 200, "Thành công", data, null);
-    }
-
     public static <T> ApiResponse<T> success(T data, String message) {
         return new ApiResponse<>(true, 200, message, data, null);
     }
 
     public static <T> ApiResponse<T> success(T data, int status, String message) {
         return new ApiResponse<>(true, status, message, data, null);
+    }
+
+    public static <T> ApiResponse<T> success(T data) {
+        return new ApiResponse<>(true, 200, "Success", data, null);
     }
 
     public static <T> ApiResponse<T> error(int status, String message) {

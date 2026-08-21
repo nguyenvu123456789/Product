@@ -5,12 +5,11 @@ import com.example.product.dto.category.response.CategoryResponse;
 import com.example.product.dto.common.response.PageResponse;
 import com.example.product.dto.common.response.ApiResponse;
 import com.example.product.service.CategoryService;
+import com.example.product.ultis.MessageHelper;
 import com.example.product.ultis.paging.PageableUtils;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,11 +20,14 @@ public class CategoryController {
 
     private final CategoryService categoryService;
     private final PageableUtils pageableUtils;
+    private final MessageHelper messageHelper;
 
-    public CategoryController(CategoryService categoryService, PageableUtils pageableUtils) {
-
+    public CategoryController(CategoryService categoryService,
+                              PageableUtils pageableUtils,
+                              MessageHelper messageHelper) {
         this.categoryService = categoryService;
         this.pageableUtils = pageableUtils;
+        this.messageHelper = messageHelper;
     }
 
     @GetMapping
@@ -40,24 +42,15 @@ public class CategoryController {
         PageResponse<CategoryResponse> data = PageResponse.from(categoryPage);
 
         return ResponseEntity.ok(
-                ApiResponse.success(
-                        data,
-                        "category.list.success"
-                )
+                ApiResponse.success(data, messageHelper.get("category.list.success"))
         );
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<CategoryResponse>> getById(
-            @PathVariable Long id) {
-
+    public ResponseEntity<ApiResponse<CategoryResponse>> getById(@PathVariable Long id) {
         CategoryResponse category = categoryService.getById(id);
-
         return ResponseEntity.ok(
-                ApiResponse.success(
-                        category,
-                        "category.get.success"
-                )
+                ApiResponse.success(category, messageHelper.get("category.get.success"))
         );
     }
 
@@ -66,44 +59,31 @@ public class CategoryController {
             @Valid @RequestBody CreateCategoryRequest request) {
 
         CategoryResponse category = categoryService.create(request);
-
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(
-                        ApiResponse.success(
-                                category,
-                                HttpStatus.CREATED.value(),
-                                "category.create.success"
-                        )
-                );
+                .body(ApiResponse.success(
+                        category,
+                        HttpStatus.CREATED.value(),
+                        messageHelper.get("category.create.success")
+                ));
     }
 
-    @PutMapping("/{id}")    
+    @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<CategoryResponse>> update(
             @PathVariable Long id,
             @Valid @RequestBody CreateCategoryRequest request) {
 
         CategoryResponse category = categoryService.update(id, request);
-
         return ResponseEntity.ok(
-                ApiResponse.success(
-                        category,
-                        "category.update.success"
-                )
+                ApiResponse.success(category, messageHelper.get("category.update.success"))
         );
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> delete(
-            @PathVariable Long id) {
-
+    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
         categoryService.delete(id);
-
         return ResponseEntity.ok(
-                ApiResponse.success(
-                        null,
-                        "category.delete.success"
-                )
+                ApiResponse.success(null, messageHelper.get("category.delete.success"))
         );
     }
 }
