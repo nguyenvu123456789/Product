@@ -37,7 +37,6 @@ public class CategoryController {
 
         Pageable pageable = pageableUtils.build(page, size, sortBy, direction);
         Page<CategoryResponse> categoryPage = categoryService.getAll(pageable);
-
         PageResponse<CategoryResponse> data = PageResponse.from(categoryPage);
 
         return ResponseEntity.ok(

@@ -22,7 +22,6 @@ public class ApiResponse<T> {
         this.timestamp = LocalDateTime.now();
     }
 
-    // ---- factory methods cho response thành công ----
     public static <T> ApiResponse<T> success(T data) {
         return new ApiResponse<>(true, 200, "Thành công", data, null);
     }

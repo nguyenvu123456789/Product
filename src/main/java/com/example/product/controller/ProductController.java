@@ -88,7 +88,6 @@ public class ProductController {
             @Valid @RequestBody CreateProductRequest request) {
 
         ProductResponse product = productService.update(id, request);
-
         return ResponseEntity.ok(
                 ApiResponse.success(
                         product,

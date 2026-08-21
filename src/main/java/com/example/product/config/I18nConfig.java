@@ -34,8 +34,9 @@ public class I18nConfig {
     @Bean
     public LocaleResolver localeResolver() {
         AcceptHeaderLocaleResolver resolver = new AcceptHeaderLocaleResolver();
-        resolver.setDefaultLocale(new Locale("vi"));
-        resolver.setSupportedLocales(List.of(new Locale("vi"), new Locale("en")));
+        Locale defaultLocale = Locale.of("vi");
+        resolver.setDefaultLocale(defaultLocale);
+        resolver.setSupportedLocales(List.of(defaultLocale, Locale.ENGLISH));
         return resolver;
     }
 }
