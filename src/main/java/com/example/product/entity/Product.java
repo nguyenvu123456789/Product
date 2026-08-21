@@ -2,9 +2,16 @@ package com.example.product.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "product")
 public class Product extends BaseEntity {
@@ -33,32 +40,11 @@ public class Product extends BaseEntity {
 
     private String status;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(
+            mappedBy = "product",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
+    )
     private List<ProductCategory> productCategories = new ArrayList<>();
-
-    public Product() {}
-
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
-
-    public Double getPrice() { return price; }
-    public void setPrice(Double price) { this.price = price; }
-
-    public String getProductCode() { return productCode; }
-    public void setProductCode(String productCode) { this.productCode = productCode; }
-
-    public String getImage() { return image; }
-    public void setImage(String image) { this.image = image; }
-
-    public Long getQuantity() { return quantity; }
-    public void setQuantity(Long quantity) { this.quantity = quantity; }
-
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
-
-    public List<ProductCategory> getProductCategories() { return productCategories; }
-    public void setProductCategories(List<ProductCategory> productCategories) { this.productCategories = productCategories; }
 }
