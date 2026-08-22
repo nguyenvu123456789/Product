@@ -1,8 +1,6 @@
 package com.example.product.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,14 +15,11 @@ import java.util.List;
 @Table(name = "category")
 public class Category extends BaseEntity {
 
-    @NotBlank(message = "{category.name.notblank}")
-    @Size(max = 255)
     private String name;
 
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @NotBlank(message = "{category.code.notblank}")
     @Column(name = "category_code", unique = true)
     private String categoryCode;
 

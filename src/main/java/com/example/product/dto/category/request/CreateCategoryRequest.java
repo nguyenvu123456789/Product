@@ -2,9 +2,11 @@ package com.example.product.dto.category.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.util.Date;
-
+@Setter
+@Getter
 public class CreateCategoryRequest {
 
     @NotBlank(message = "{category.name.notblank}")
@@ -17,17 +19,5 @@ public class CreateCategoryRequest {
     private String categoryCode;
 
     private String status;
-
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
-
-    public String getCategoryCode() { return categoryCode; }
-    public void setCategoryCode(String categoryCode) { this.categoryCode = categoryCode; }
-
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
 
 }

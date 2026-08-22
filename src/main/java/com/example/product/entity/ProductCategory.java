@@ -1,7 +1,11 @@
 package com.example.product.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
+@Setter
+@Getter
 @Entity
 @Table(name = "product_category")
 public class ProductCategory extends BaseEntity {
@@ -16,9 +20,4 @@ public class ProductCategory extends BaseEntity {
 
     public ProductCategory() {}
 
-    public Product getProduct() { return product; }
-    public void setProduct(Product product) { this.product = product; }
-
-    public Category getCategory() { return category; }
-    public void setCategory(Category category) { this.category = category; }
 }
