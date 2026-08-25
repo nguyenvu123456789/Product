@@ -10,6 +10,7 @@ import com.example.product.repository.ProductRepository;
 import com.example.product.service.CloudinaryService;
 import com.example.product.service.ImageUploadService;
 import com.example.product.service.ProductService;
+import com.example.product.ultis.file.ExcelExporter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
+import java.util.List;
 
 @Service
 @Transactional
@@ -28,16 +30,20 @@ public class ProductServiceImpl implements ProductService {
     private static final String PRODUCT_IMAGE_FOLDER = "products";
     private final CloudinaryService cloudinaryService;
     private final ImageUploadService imageUploadService;
+    private final ExcelExporter excelExporter;
 
     public ProductServiceImpl(ProductRepository productRepository,
                               ProductMapper productMapper,
                               CloudinaryService cloudinaryService,
-                              ImageUploadService imageUploadService) {
+                              ImageUploadService imageUploadService,
+                              ExcelExporter excelExporter) {
         this.productRepository = productRepository;
         this.productMapper = productMapper;
         this.cloudinaryService = cloudinaryService;
         this.imageUploadService = imageUploadService;
+        this.excelExporter = excelExporter;
     }
+
     @Override
     public Page<ProductResponse> getAll(Pageable pageable) {
         return productRepository.findAll(pageable)
@@ -115,6 +121,20 @@ public class ProductServiceImpl implements ProductService {
         }
 
         return productMapper.toResponse(updated);
+    }
+
+    @Override
+    public byte[] exportExcel(ProductSearchRequest request) {
+
+        List<Product> products = productRepository.searchForExport(
+                request.getName(),
+                request.getProductCode(),
+                request.getStatus(),
+                request.getMinPrice(),
+                request.getMaxPrice()
+        );
+
+        return excelExporter.exportProducts(products);
     }
 
 }

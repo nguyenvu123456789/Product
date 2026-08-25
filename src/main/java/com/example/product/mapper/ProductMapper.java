@@ -20,14 +20,11 @@ public interface ProductMapper {
     @Mapping(target = "categories", source = "productCategories", qualifiedByName = "mapCategories")
     ProductResponse toResponse(Product product);
 
-    List<ProductResponse> toResponseList(List<Product> products);
-
     @Mapping(target = "productCategories", ignore = true)
     @Mapping(target = "id", ignore = true)
     Product toEntity(CreateProductRequest request);
 
     CategoryResponse toCategoryResponse(Category category);
-    List<CategoryResponse> toCategoryResponseList(List<Category> categories);
 
     @Named("mapCategories")
     default List<CategorySimpleDTO> mapCategories(List<ProductCategory> productCategories) {

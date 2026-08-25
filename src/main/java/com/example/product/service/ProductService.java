@@ -21,5 +21,5 @@ public interface ProductService {
 
     void delete(Long id);
     ProductResponse uploadImage(Long id, MultipartFile file);
-
+    byte[] exportExcel(ProductSearchRequest request);
 }

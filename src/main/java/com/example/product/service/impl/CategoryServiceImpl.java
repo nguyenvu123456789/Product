@@ -45,7 +45,6 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = categoryMapper.toEntity(request);
 
         Date now = new Date();
-
         category.setCreatedDate(now);
         category.setModifiedDate(now);
 

@@ -12,9 +12,6 @@ import java.util.List;
 public interface CategoryMapper {
 
     CategoryResponse toResponse(Category category);
-
-    List<CategoryResponse> toResponseList(List<Category> categories);
-
     @Mapping(target = "productCategories", ignore = true)
     @Mapping(target = "id", ignore = true)
     Category toEntity(CreateCategoryRequest request);

@@ -1,5 +1,6 @@
 package com.example.product.controller;
 
+import com.example.product.dto.common.request.ProductSearchRequest;
 import com.example.product.dto.product.request.CreateProductRequest;
 import com.example.product.dto.product.response.ProductResponse;
 import com.example.product.dto.common.response.PageResponse;
@@ -11,6 +12,7 @@ import com.example.product.ultis.paging.PageableUtils;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -116,5 +118,24 @@ public class ProductController {
         return ResponseEntity.ok(
                 ApiResponse.success(Map.of("url", url), messageHelper.get("product.image.upload.success"))
         );
+    }
+
+    @GetMapping("/export")
+    public ResponseEntity<byte[]> exportExcel(
+            @ModelAttribute ProductSearchRequest request) {
+
+        byte[] excelFile = productService.exportExcel(request);
+
+        return ResponseEntity.ok()
+                .header(
+                        HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=products.xlsx"
+                )
+                .contentType(
+                        MediaType.parseMediaType(
+                                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                        )
+                )
+                .body(excelFile);
     }
 }

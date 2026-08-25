@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
@@ -28,5 +30,22 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             @Param("minPrice") Double minPrice,
             @Param("maxPrice") Double maxPrice,
             Pageable pageable
+    );
+
+    @Query("""
+        SELECT p FROM Product p
+        WHERE (:name IS NULL OR LOWER(p.name) LIKE LOWER(CONCAT('%', :name, '%')))
+          AND (:productCode IS NULL OR LOWER(p.productCode) LIKE LOWER(CONCAT('%', :productCode, '%')))
+          AND (:status IS NULL OR p.status = :status)
+          AND (:minPrice IS NULL OR p.price >= :minPrice)
+          AND (:maxPrice IS NULL OR p.price <= :maxPrice)
+        ORDER BY p.id ASC
+        """)
+    List<Product> searchForExport(
+            @Param("name") String name,
+            @Param("productCode") String productCode,
+            @Param("status") String status,
+            @Param("minPrice") Double minPrice,
+            @Param("maxPrice") Double maxPrice
     );
 }
