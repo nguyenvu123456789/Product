@@ -1,5 +1,8 @@
 package com.example.product.ultis.file;
 
+import lombok.Getter;
+
+@Getter
 public class FileValidationException extends RuntimeException {
 
     private final String messageKey;
@@ -11,11 +14,4 @@ public class FileValidationException extends RuntimeException {
         this.args = args;
     }
 
-    public String getMessageKey() {
-        return messageKey;
-    }
-
-    public Object[] getArgs() {
-        return args;
-    }
 }

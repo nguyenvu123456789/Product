@@ -1,5 +1,8 @@
 package com.example.product.exception;
 
+import lombok.Getter;
+
+@Getter
 public class ResourceNotFoundException extends RuntimeException {
 
     private final String messageKey;
@@ -17,11 +20,4 @@ public class ResourceNotFoundException extends RuntimeException {
         this.args = args;
     }
 
-    public String getMessageKey() {
-        return messageKey;
-    }
-
-    public Object[] getArgs() {
-        return args;
-    }
 }

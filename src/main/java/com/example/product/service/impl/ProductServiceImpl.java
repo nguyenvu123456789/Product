@@ -71,6 +71,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductResponse create(CreateProductRequest request) {
+        if (productRepository.existsByProductCode(request.getProductCode())) {
+            throw new IllegalArgumentException("error.product.code.exists");
+        }
         Product product = productMapper.toEntity(request);
         product.setCreatedDate(new Date());
         product.setModifiedDate(new Date());
@@ -82,6 +85,11 @@ public class ProductServiceImpl implements ProductService {
     public ProductResponse update(Long id, CreateProductRequest request) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("error.product.notfound", id));
+
+        boolean codeChanged = !product.getProductCode().equals(request.getProductCode());
+        if (codeChanged && productRepository.existsByProductCode(request.getProductCode())) {
+            throw new IllegalArgumentException("error.product.code.exists");
+        }
         product.setName(request.getName());
         product.setImage(request.getImage());
         product.setDescription(request.getDescription());
