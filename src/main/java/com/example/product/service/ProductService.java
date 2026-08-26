@@ -20,6 +20,8 @@ public interface ProductService {
     ProductResponse update(Long id, CreateProductRequest request);
 
     void delete(Long id);
+
     ProductResponse uploadImage(Long id, MultipartFile file);
+
     byte[] exportExcel(ProductSearchRequest request);
 }
