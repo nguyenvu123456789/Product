@@ -42,7 +42,7 @@ public class CategoryController {
         PageResponse<CategoryResponse> data = PageResponse.from(categoryPage);
 
         return ResponseEntity.ok(
-                ApiResponse.success(data, messageHelper.get("category.list.success"))
+                ApiResponse.of(data, messageHelper.get("category.list.success"))
         );
     }
 
@@ -50,7 +50,7 @@ public class CategoryController {
     public ResponseEntity<ApiResponse<CategoryResponse>> getById(@PathVariable Long id) {
         CategoryResponse category = categoryService.getById(id);
         return ResponseEntity.ok(
-                ApiResponse.success(category, messageHelper.get("category.get.success"))
+                ApiResponse.of(category, messageHelper.get("category.get.success"))
         );
     }
 
@@ -61,9 +61,8 @@ public class CategoryController {
         CategoryResponse category = categoryService.create(request);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(ApiResponse.success(
+                .body(ApiResponse.of(
                         category,
-                        HttpStatus.CREATED.value(),
                         messageHelper.get("category.create.success")
                 ));
     }
@@ -75,7 +74,7 @@ public class CategoryController {
 
         CategoryResponse category = categoryService.update(id, request);
         return ResponseEntity.ok(
-                ApiResponse.success(category, messageHelper.get("category.update.success"))
+                ApiResponse.of(category, messageHelper.get("category.update.success"))
         );
     }
 
@@ -83,7 +82,7 @@ public class CategoryController {
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
         categoryService.delete(id);
         return ResponseEntity.ok(
-                ApiResponse.success(null, messageHelper.get("category.delete.success"))
+                ApiResponse.of(null, messageHelper.get("category.delete.success"))
         );
     }
 }

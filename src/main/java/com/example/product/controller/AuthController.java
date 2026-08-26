@@ -30,7 +30,7 @@ public class AuthController {
 
         LoginResponse response = authService.login(request);
         return ResponseEntity.ok(
-                ApiResponse.success(response, messageHelper.get("auth.login.success"))
+                ApiResponse.of(response, messageHelper.get("auth.login.success"))
         );
     }
 }

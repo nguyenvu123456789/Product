@@ -54,7 +54,7 @@ public class ProductController {
         PageResponse<ProductResponse> data = PageResponse.from(productPage);
 
         return ResponseEntity.ok(
-                ApiResponse.success(data, messageHelper.get("product.list.success"))
+                ApiResponse.of(data, messageHelper.get("product.list.success"))
         );
     }
 
@@ -62,7 +62,7 @@ public class ProductController {
     public ResponseEntity<ApiResponse<ProductResponse>> getById(@PathVariable Long id) {
         ProductResponse product = productService.getById(id);
         return ResponseEntity.ok(
-                ApiResponse.success(product, messageHelper.get("product.get.success"))
+                ApiResponse.of(product, messageHelper.get("product.get.success"))
         );
     }
 
@@ -73,9 +73,8 @@ public class ProductController {
         ProductResponse product = productService.create(request);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(ApiResponse.success(
+                .body(ApiResponse.of(
                         product,
-                        HttpStatus.CREATED.value(),
                         messageHelper.get("product.create.success")
                 ));
     }
@@ -87,7 +86,7 @@ public class ProductController {
 
         ProductResponse product = productService.update(id, request);
         return ResponseEntity.ok(
-                ApiResponse.success(product, messageHelper.get("product.update.success"))
+                ApiResponse.of(product, messageHelper.get("product.update.success"))
         );
     }
 
@@ -95,7 +94,7 @@ public class ProductController {
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
         productService.delete(id);
         return ResponseEntity.ok(
-                ApiResponse.success(null, messageHelper.get("product.delete.success"))
+                ApiResponse.of(null, messageHelper.get("product.delete.success"))
         );
     }
 
@@ -106,7 +105,7 @@ public class ProductController {
 
         ProductResponse product = productService.uploadImage(id, file);
         return ResponseEntity.ok(
-                ApiResponse.success(product, messageHelper.get("product.image.upload.success"))
+                ApiResponse.of(product, messageHelper.get("product.image.upload.success"))
         );
     }
 
@@ -116,7 +115,7 @@ public class ProductController {
 
         String url = imageUploadService.upload(file, PRODUCT_IMAGE_FOLDER);
         return ResponseEntity.ok(
-                ApiResponse.success(Map.of("url", url), messageHelper.get("product.image.upload.success"))
+                ApiResponse.of(Map.of("url", url), messageHelper.get("product.image.upload.success"))
         );
     }
 

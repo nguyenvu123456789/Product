@@ -42,7 +42,7 @@ public class UserController {
         PageResponse<UserResponse> data = PageResponse.from(userPage);
 
         return ResponseEntity.ok(
-                ApiResponse.success(data, messageHelper.get("user.list.success"))
+                ApiResponse.of(data, messageHelper.get("user.list.success"))
         );
     }
 }
